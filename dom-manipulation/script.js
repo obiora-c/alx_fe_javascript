@@ -148,30 +148,41 @@ async function fetchQuotesFromServer() {
 }
 
 // Sync local quotes with server (POST with headers)
-async function postQuotesToServer(quote = null) {
-  const quotesToSend = quote ? [quote] : JSON.parse(localStorage.getItem("quotes")) || [];
+// ==========================================================
+// POST LOCAL QUOTES TO SERVER
+// ==========================================================
+async function postQuotesToServer() {
+  const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
-  if (quotesToSend.length === 0) {
-    console.log("No quotes to sync.");
+  if (localQuotes.length === 0) {
+    console.log("No quotes to send.");
     return;
   }
 
   try {
     const response = await fetch("https://example.com/sync-quotes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
+      method: "POST", // ✅ required
+      headers: {      // ✅ required
+        "Content-Type": "application/json" // ✅ required
       },
-      body: JSON.stringify({ quotes: quotesToSend })
+      body: JSON.stringify({ quotes: localQuotes }) // send JSON
     });
+
     const data = await response.json();
     console.log("Quotes successfully posted to server:", data);
-    showNotification("Quotes synced with server");
   } catch (error) {
     console.error("Error posting quotes to server:", error);
-    showNotification("Server sync failed", true);
   }
 }
+
+// Optional: call this after adding a quote
+addQuoteBtn.addEventListener("click", () => {
+  addQuote();
+  postQuotesToServer(); // sync immediately
+});
+
+// Optional: call periodically for auto-sync
+setInterval(postQuotesToServer, 30000);
 
 // Full sync from server (GET + merge conflicts)
 async function syncQuotes() {
