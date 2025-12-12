@@ -168,10 +168,14 @@ async function postQuotesToServer() {
       body: JSON.stringify({ quotes: localQuotes }) // send JSON
     });
 
+    
     const data = await response.json();
-    console.log("Quotes successfully posted to server:", data);
+    // ✅ Show exact string required
+    showNotification("Quotes synced with server!");
+    console.log("Server response:", data);
   } catch (error) {
-    console.error("Error posting quotes to server:", error);
+    showNotification("Server sync failed", true);
+    console.error(error);
   }
 }
 
