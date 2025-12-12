@@ -290,7 +290,8 @@ function showNotification(message, error = false) {
 // ======================================================================
 newQuoteBtn.addEventListener("click", showRandomQuote);
 categoryFilter.addEventListener("change", filterQuotes);
-addQuoteBtn.addEventListener("click", createAddQuoteForm);
+addQuoteBtn.addEventListener("click", () => {
+  createAddQuoteForm(); syncQuotes(); });
 importFileInput.addEventListener("change", importFromJsonFile);
 exportBtn.addEventListener("click", exportQuotes);
 
