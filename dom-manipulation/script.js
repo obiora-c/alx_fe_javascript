@@ -19,12 +19,50 @@ const importFileInput = document.getElementById("importFile");
 const exportBtn = document.getElementById("exportBtn");
 const notification = document.getElementById("notification");  // require <div id="notification"></div>
 
+
+
+
+
+// Function to send a new quote to the server
+function saveQuoteToServer(quoteText, category) {
+    fetch("https://example.com/save-quote", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            quote: quoteText,
+            category: category
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Quote saved successfully:", data);
+    })
+    .catch(error => {
+        console.error("Error saving quote:", error);
+    });
+}
+
+
+
+
+
+
+
 // ======================================================================
 //  SAVE TO LOCAL STORAGE
 // ======================================================================
-function saveQuotes() {
-  localStorage.setItem("quotes", JSON.stringify(quotes));
+function saveQuote(quoteText, category) {
+    // Save locally
+    const savedQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+    savedQuotes.push({ quote: quoteText, category: category });
+    localStorage.setItem("quotes", JSON.stringify(savedQuotes));
+
+    // Save to server
+    saveQuoteToServer(quoteText, category);
 }
+
 
 // ======================================================================
 //  DISPLAY RANDOM QUOTE
