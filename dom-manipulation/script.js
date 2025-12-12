@@ -1,3 +1,7 @@
+
+
+
+
 // ===============================================================
 //  INITIAL SETUP
 // ===============================================================
@@ -14,6 +18,9 @@ let selectedCategory = localStorage.getItem("selectedCategory") || "all";
 // DOM Elements
 const quoteDisplay = document.getElementById("quoteDisplay");
 const categoryFilter = document.getElementById("categoryFilter");
+const newQuoteBtn = document.getElementById("newQuote");
+const addQuoteBtn = document.getElementById("addQuoteBtn");
+const importFileInput = document.getElementById("importFile");
 
 // ===============================================================
 //  SAVE QUOTES TO LOCAL STORAGE
@@ -28,7 +35,6 @@ function saveQuotes() {
 function showRandomQuote() {
   let filteredQuotes = quotes;
 
-  // Apply filter if not "all"
   if (selectedCategory !== "all") {
     filteredQuotes = quotes.filter(q => q.category === selectedCategory);
   }
@@ -60,7 +66,6 @@ function populateCategories() {
     categoryFilter.appendChild(option);
   });
 
-  // Restore selected category from storage
   categoryFilter.value = selectedCategory;
 }
 
@@ -76,7 +81,7 @@ function filterQuotes() {
 // ===============================================================
 //  ADD NEW QUOTE
 // ===============================================================
-function createAddQuoteForm() {
+function CreateAddQuoteForm() {
   const textInput = document.getElementById("newQuoteText");
   const categoryInput = document.getElementById("newQuoteCategory");
 
@@ -92,7 +97,7 @@ function createAddQuoteForm() {
   quotes.push(newQuote);
 
   saveQuotes();
-  populateCategories();  // Update dropdown if new category added
+  populateCategories();
 
   textInput.value = "";
   categoryInput.value = "";
@@ -134,9 +139,17 @@ function importFromJsonFile(event) {
 }
 
 // ===============================================================
+//  EVENT LISTENERS
+// ===============================================================
+newQuoteBtn.addEventListener("click", showRandomQuote);
+categoryFilter.addEventListener("change", filterQuotes);
+addQuoteBtn.addEventListener("click", createAddQuoteForm);
+importFileInput.addEventListener("change", importFromJsonFile);
+
+// ===============================================================
 //  INITIALIZE APP
 // ===============================================================
 window.onload = function () {
-  populateCategories();   // Load categories
-  showRandomQuote();      // Show initial quote
+  populateCategories();
+  showRandomQuote();
 };
