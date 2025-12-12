@@ -7,56 +7,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dynamic Quote Generator — Storage & JSON</title>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; max-width:900px; margin:24px auto; padding:0 16px; }
-    #quoteDisplay { padding:16px; border:1px solid #ddd; min-height:64px; margin-bottom:12px; border-radius:8px; }
-    .controls > * { margin-right:8px; margin-bottom:8px; }
-    .small { color:#666; font-size:0.9rem; }
-    input[type="text"]{ padding:6px 8px; width:260px; }
-    button{ padding:8px 12px; }
-    .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
-  </style>
-</head>
-<body>
+  
+
   <h1>Dynamic Quote Generator</h1>
+  <div id="quoteDisplay"></div>
+  <select id="categoryFilter"></select>
+  <button id="newQuote">Show New Quote</button>
 
-  <div id="quoteDisplay" aria-live="polite"></div>
-
-  <div class="row controls">
-    <button id="newQuote">Show New Quote</button>
-    <button id="showLast">Show Last Viewed</button>
-    <span class="small">Last viewed (session): <span id="lastViewedText">—</span></span>
-  </div>
-
-  <hr />
-
-  <h3>Add a New Quote</h3>
-  <div class="row">
+  <div>
     <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
     <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
     <button id="addQuoteBtn">Add Quote</button>
   </div>
 
-  <h3>Import / Export</h3>
-  <div class="row">
-    <input type="file" id="importFile" accept=".json,application/json" />
-    <button id="exportBtn">Export Quotes (JSON)</button>
-    <button id="clearStorageBtn">Clear Local Storage</button>
-  </div>
+  <input type="file" id="importFile" accept=".json" />
+  <button id="exportBtn">Export Quotes</button>
+  <button id="syncBtn">Sync Now</button>
 
-  <p class="small">Tip: Imported JSON must be an array of objects with <code>text</code> and <code>category</code> string fields.</p>
-  
+  <div id="notification" style="display:none; padding:10px; margin:10px 0; border-radius:5px; font-weight:bold;"></div>
 
-  <div id="notification" style="
-  display:none;
-  padding:10px;
-  margin:10px 0;
-  border-radius:5px;
-  font-weight:bold;
-  "></div>
-
-  <h3>Filter by Category</h3>
-  <select id="categoryFilter"></select>
   <script src="script.js"></script>
 </body>
 </html>

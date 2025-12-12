@@ -19,8 +19,8 @@ const newQuoteBtn = document.getElementById("newQuote");
 const addQuoteBtn = document.getElementById("addQuoteBtn");
 const importFileInput = document.getElementById("importFile");
 const exportBtn = document.getElementById("exportBtn");
-const notification = document.getElementById("notification");
 const syncBtn = document.getElementById("syncBtn");
+const notification = document.getElementById("notification");
 
 // ================================
 // LOCAL STORAGE
@@ -69,7 +69,7 @@ function filterQuotes() {
 // ================================
 // ADD NEW QUOTE
 // ================================
-function addQuote() {
+function createAddQuoteForm() {
   const textInput = document.getElementById("newQuoteText");
   const categoryInput = document.getElementById("newQuoteCategory");
   const text = textInput.value.trim();
@@ -87,6 +87,9 @@ function addQuote() {
   textInput.value = "";
   categoryInput.value = "";
   showNotification("Quote added locally");
+
+  // Immediately send to server
+  postQuotesToServer(newQuote);
 }
 
 // ================================
@@ -144,7 +147,33 @@ async function fetchQuotesFromServer() {
   }));
 }
 
-// Sync local quotes with server
+// Sync local quotes with server (POST with headers)
+async function postQuotesToServer(quote = null) {
+  const quotesToSend = quote ? [quote] : JSON.parse(localStorage.getItem("quotes")) || [];
+
+  if (quotesToSend.length === 0) {
+    console.log("No quotes to sync.");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://example.com/sync-quotes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ quotes: quotesToSend })
+    });
+    const data = await response.json();
+    console.log("Quotes successfully posted to server:", data);
+    showNotification("Quotes synced with server");
+  } catch (error) {
+    console.error("Error posting quotes to server:", error);
+    showNotification("Server sync failed", true);
+  }
+}
+
+// Full sync from server (GET + merge conflicts)
 async function syncQuotes() {
   try {
     const serverQuotes = await fetchQuotesFromServer();
@@ -169,7 +198,6 @@ async function syncQuotes() {
     } else {
       showNotification("Quotes synced with server");
     }
-
   } catch (error) {
     showNotification("Server sync failed", true);
     console.error("Sync error:", error);
@@ -184,7 +212,7 @@ setInterval(syncQuotes, 30000);
 // ================================
 newQuoteBtn.addEventListener("click", showRandomQuote);
 categoryFilter.addEventListener("change", filterQuotes);
-addQuoteBtn.addEventListener("click", addQuote);
+addQuoteBtn.addEventListener("click", createAddQuoteForm);
 importFileInput.addEventListener("change", importFromJsonFile);
 exportBtn.addEventListener("click", exportQuotes);
 syncBtn.addEventListener("click", syncQuotes);
