@@ -64,6 +64,39 @@ function saveQuote(quoteText, category) {
 }
 
 
+
+
+// Sync all locally saved quotes to the server
+function syncQuotes() {
+    const savedQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+    if (savedQuotes.length === 0) {
+        console.log("No quotes to sync.");
+        return;
+    }
+
+    fetch("https://example.com/sync-quotes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            quotes: savedQuotes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Quotes synced successfully:", data);
+
+        // Clear local unsynced data after successful sync
+        localStorage.removeItem("quotes");
+    })
+    .catch(error => {
+        console.error("Error syncing quotes:", error);
+    });
+}
+
+
 // ======================================================================
 //  DISPLAY RANDOM QUOTE
 // ======================================================================
