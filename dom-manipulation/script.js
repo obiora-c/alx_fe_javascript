@@ -144,18 +144,29 @@ function importFromJsonFile(event) {
 // ======================================================================
 //  SERVER SYNC LOGIC
 // ======================================================================
-const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
+// ===========================================================
+//  FETCH QUOTES FROM SERVER (REQUIRED FUNCTION NAME)
+// ===========================================================
+async function fetchQuotesFromServer() {
+  const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
 
+  const response = await fetch(SERVER_URL);
+  const serverData = await response.json();
+
+  // Convert posts → quotes
+  return serverData.slice(0, 10).map(item => ({
+    id: item.id,
+    text: item.title,
+    category: "Server"
+  }));
+}
+
+// ======================================================================
+//  SERVER SYNC LOGIC (updated to use fetchQuotesFromServer())
+// ======================================================================
 async function syncWithServer() {
   try {
-    const result = await fetch(SERVER_URL);
-    const serverData = await result.json();
-
-    const serverQuotes = serverData.slice(0, 10).map(item => ({
-      id: item.id,
-      text: item.title,
-      category: "Server"
-    }));
+    const serverQuotes = await fetchQuotesFromServer();
 
     let conflictCount = 0;
 
@@ -163,10 +174,10 @@ async function syncWithServer() {
       const local = quotes.find(q => q.id === serverQuote.id);
 
       if (!local) {
-        // new server quote
+        // New data from server
         quotes.push(serverQuote);
       } else if (local.text !== serverQuote.text) {
-        // conflict → server wins
+        // Conflict → server wins
         conflictCount++;
         Object.assign(local, serverQuote);
       }
@@ -176,15 +187,16 @@ async function syncWithServer() {
     populateCategories();
 
     if (conflictCount > 0) {
-      showNotification(`${conflictCount} conflicts resolved (server won)`);
+      showNotification(`${conflictCount} conflicts resolved (server version used)`);
     } else {
       showNotification("Synced with server");
     }
 
-  } catch (err) {
+  } catch (error) {
     showNotification("Server sync failed", true);
   }
 }
+
 
 // Auto sync every 30 seconds
 setInterval(syncWithServer, 30000);
